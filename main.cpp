@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <string>
 using namespace std;
 
 class Node
@@ -9,16 +10,16 @@ public:
     int rollNo;
     float cgpa;
     int attendance;
-    string feeStatus;
+    // string feeStatus;
     Node *next = nullptr;
 
-    Node(string n, int r, float c, int a, string fee)
+    Node(string n, int r, float c, int a)
     {
         Name = n;
         rollNo = r;
         cgpa = c;
         attendance = a;
-        feeStatus = fee;
+        // feeStatus = fee;
     }
 };
 
@@ -30,13 +31,23 @@ public:
     {
         head = nullptr;
     }
-
+    int countstudents()
+    {
+        int n = 0;
+        Node *temp = head;
+        while (temp != nullptr)
+        {
+            n++;
+            temp = temp->next;
+        }
+        return n;
+    }
     void insertStudent() // Node *&head
     {
         string name;
         int rollNo;
         float cgpa;
-        string feeStatus;
+        // string feeStatus;
         float attendedClasses;
         const int totalClasses = 48;
 
@@ -49,6 +60,12 @@ public:
 
         cout << "Roll Number: ";
         cin >> rollNo;
+
+        if (isRollExist(rollNo))
+        {
+            cout << "This Roll Number already exists! Roll Number must be UNIQUE.\n";
+            return;
+        }
 
         cout << "CGPA (0.0 - 4.0): ";
         cin >> cgpa;
@@ -67,12 +84,12 @@ public:
             return;
         }
 
-        cout << "Enter Fee Status (Paid/Pending): ";
-        getline(cin, feeStatus);
+        /*  cout << "Enter Fee Status (Paid/Pending): ";
+          getline(cin, feeStatus);*/
 
         float attendancePercent = (attendedClasses / (float)totalClasses) * 100;
 
-        Node *new_node = new Node(name, rollNo, cgpa, attendancePercent, feeStatus);
+        Node *new_node = new Node(name, rollNo, cgpa, attendancePercent);
 
         if (head == nullptr)
         {
@@ -229,9 +246,10 @@ public:
     {
         string search_Name;
         cout << "Enter Student Name: ";
-        // getline(cin, search_Name);
-        cin >> search_Name;
         cin.ignore();
+        getline(cin, search_Name);
+        /*       cin >> search_Name;*/
+
         bool found = false;
 
         Node *temp = head;
@@ -242,8 +260,8 @@ public:
                 cout << "\nName: " << temp->Name
                      << "\nRoll No: " << temp->rollNo
                      << "\nCGPA: " << temp->cgpa
-                     << "\nAttendance: " << temp->attendance << "%"
-                     << "\nFee status: " << temp->feeStatus << "\n";
+                     << "\nAttendance: " << temp->attendance << "%";
+                //<< "\nFee status: " << temp->feeStatus << "\n";
 
                 found = true;
                 break;
@@ -273,8 +291,8 @@ public:
                 cout << "\nRoll No: " << temp->rollNo
                      << "\nName: " << temp->Name
                      << "\nCGPA: " << temp->cgpa
-                     << "\nAttendance: " << temp->attendance << "%"
-                     << "\nFee status: " << temp->feeStatus << "\n";
+                     << "\nAttendance: " << temp->attendance << "%";
+                //<< "\nFee status: " << temp->feeStatus << "\n";
                 found = true;
                 break;
             }
@@ -285,18 +303,72 @@ public:
             cout << "No student found with Roll Number " << search_roll << endl;
         }
     }
+
+    bool isRollExist(int r)
+    {
+        Node *temp = head;
+        while (temp != nullptr)
+        {
+            if (temp->rollNo == r)
+                return true;
+            temp = temp->next;
+        }
+        return false;
+    }
+
+    void SortBy_RollNo()
+    {
+        int n = countstudents();
+        if (n < 2)
+            return;
+        Node *temp;
+        Node *current;
+
+        for (int i = 0; i < n - 1; i++)
+        {
+            current = head;
+
+            for (int j = 0; j < n - 1 - i; j++)
+            {
+                if (current->rollNo > current->next->rollNo)
+                {
+
+                    int tRoll = current->rollNo;
+                    current->rollNo = current->next->rollNo;
+                    current->next->rollNo = tRoll;
+
+                    string tName = current->Name;
+                    current->Name = current->next->Name;
+                    current->next->Name = tName;
+
+                    float tCgpa = current->cgpa;
+                    current->cgpa = current->next->cgpa;
+                    current->next->cgpa = tCgpa;
+
+                    int tAttendance = current->attendance;
+                    current->attendance = current->next->attendance;
+                    current->next->attendance = tAttendance;
+                }
+                current = current->next;
+            }
+        }
+
+        cout << "\nStudents sorted by Roll Number!\n";
+    }
 };
+
+// ---------------- MAIN OUTSIDE CLASS ------------------
 
 int main()
 {
     StudentList obj;
-    Node *head = nullptr;
+    // Node* head = nullptr;
 
     int id;
 
     while (true)
     {
-        cout << "\n===== Student Management Menu =====";
+        cout << "\n===== Student Record Management System =====";
         cout << "\n1) Add Student";
         cout << "\n2) Display All Students";
         cout << "\n3) Update Student";
@@ -330,11 +402,14 @@ int main()
         {
             obj.searchStudent_ByGPA();
         }
+        else if (id == 7)
+        {
+            obj.SortBy_RollNo();
+            obj.displayStudents(obj.head);
+        }
         else if (id == 8)
         {
             obj.showAttendance();
         }
     }
-
-    return 0;
 }
