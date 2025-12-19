@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+
 using namespace std;
 
 class Node
@@ -355,7 +356,16 @@ public:
 
         cout << "\nStudents sorted by Roll Number!\n";
     }
+
+    //// -------------------- Delete Student --------------------
+    void deleteStudent()
+    {
+    }
 };
+//// -------------------- Update Student --------------------
+void updateStudent()
+{
+}
 
 // ---------------- MAIN OUTSIDE CLASS ------------------
 
